@@ -37,8 +37,12 @@ from sklearn.model_selection import train_test_split
 RANDOM_STATE = 42  # used everywhere for reproducibility -- splitting here,
                     # and later for imputation/resampling/model training too.
 
-RAW_DIR = "data/raw"
-INTERIM_DIR = "data/interim"
+# Anchor all paths to THIS FILE's location, not PyCharm's "working directory"
+# (which can silently differ between runs/configs and causes FileNotFoundError).
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DATA_DIR = os.path.join(BASE_DIR, "data")
+RAW_DIR = os.path.join(DATA_DIR, "raw")
+INTERIM_DIR = os.path.join(DATA_DIR, "interim")
 os.makedirs(INTERIM_DIR, exist_ok=True)
 
 
