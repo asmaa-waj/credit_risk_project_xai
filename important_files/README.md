@@ -22,7 +22,7 @@ Supervised by Dr. Mohammed Abdallah.
 4. Model Development & Comparison — Decision Tree (baseline), Random Forest, XGBoost
 5. Comparative Evaluation — side-by-side metrics table across all three models
 6. Explainability Integration — SHAP + LIME applied to the best-performing model
-7. Dashboard Development — real-time predictions with SHAP/LIME explanations
+7. Dashboard Development — interactive predictions with SHAP/LIME explanations
 
 ## Project Structure
 
