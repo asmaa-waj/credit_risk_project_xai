@@ -6,7 +6,32 @@ from sklearn.model_selection import train_test_split
 # ----------------------------------------------------------------------------
 # STEP 0: Setup & ground rules
 # ----------------------------------------------------------------------------
+"""
+STEP 1: Consolidate the Home Credit tables into one applicant-level dataset,
+then create your own train/test split (since only application_train exists).
 
+WHAT THIS SCRIPT DOES (in plain English):
+  1. Loads HC_application_train.csv -- your base table, one row per applicant.
+  2. Loads each of the other 6 auxiliary tables. These have MULTIPLE rows per
+     applicant (e.g. a person can have 5 previous loans), so they can't be
+     joined directly.
+  3. Aggregates each auxiliary table down to ONE row per applicant
+     (e.g. "average previous credit amount", "number of past loans").
+  4. Left-joins everything onto the base table.
+  5. Splits the result into train/test (80/20, stratified on TARGET) --
+     this stands in for the missing application_test.csv, and matches
+     Step 0.3 in your guide (split BEFORE any imputing/encoding/scaling).
+  6. Saves train_merged.csv and test_merged.csv into a new "interim" folder,
+     so your /raw files stay untouched.
+
+HOW TO RUN THIS IN PYCHARM:
+  1. This file should sit next to your "raw" folder (containing the HC_ CSVs).
+  2. Install packages if needed: File > Settings > Project > Python
+     Interpreter > + > install "pandas", "numpy", "scikit-learn".
+  3. Right-click in the editor -> "Run 'step1_consolidate_data'".
+  4. Watch the output panel at the bottom for progress.
+  5. When done, check the new "interim" folder for train_merged.csv / test_merged.csv.
+"""
 RANDOM_STATE = 42  # used everywhere for reproducibility -- splitting here,
                     # and later for imputation/resampling/model training too.
 
