@@ -8,8 +8,8 @@ Three credit scoring models (Decision Tree baseline, Random Forest, XGBoost) tra
 
 | Name | Role |
 |---|---|
-| Areej Almusalami Abdallah Bllal | Data & Preprocessing |
-| Asmaa Wajdi Ata-elmanan Ali | Model & Evaluation |
+| Asmaa Wajdi Ata-elmanan Ali  | Data & Preprocessing |
+| Areej Almusalami Abdallah Bllal| Model & Evaluation |
 | Moram Hussein Ibrahim Salih | XAI & Dashboard |
 
 Supervised by Dr. Mohammed Abdallah.
