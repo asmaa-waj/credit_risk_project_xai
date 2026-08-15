@@ -17,8 +17,12 @@ WHAT THIS SCRIPT DOES:
 
   PART B -- Winsorize (cap, don't delete) selected columns at the
   1st / 99th percentile:
-      AMT_INCOME_TOTAL, AMT_CREDIT, AMT_ANNUITY, AMT_GOODS_PRICE,
-      DAYS_EMPLOYED (after Part A fixes it), OWN_CAR_AGE.
+    23 columns total -- the original 6 (AMT_INCOME_TOTAL, AMT_CREDIT,
+    AMT_ANNUITY, AMT_GOODS_PRICE, DAYS_EMPLOYED, OWN_CAR_AGE) plus 17 more
+    identified by a broad boxplot scan across all continuous columns
+    (step3a_outlier_boxplots.py) -- mostly Step 1's aggregate columns
+    (sum/max/avg), where a single erroneous source record can dominate
+    the whole aggregate. See WINSORIZE_COLS below for the full list.
     Any value below the 1st percentile is pushed up to it; any value
     above the 99th percentile is pushed down to it. Rows are never
     deleted -- this neutralizes extreme/erroneous values (e.g. the known
@@ -91,12 +95,34 @@ print(f"DAYS_EMPLOYED median used for imputation: {days_employed_median:.1f}")
 # ----------------------------------------------------------------------------
 
 WINSORIZE_COLS = [
+    # Original 6, from the first pass
     "AMT_INCOME_TOTAL",
     "AMT_CREDIT",
     "AMT_ANNUITY",
     "AMT_GOODS_PRICE",
     "DAYS_EMPLOYED",
     "OWN_CAR_AGE",
+    # Added after the broad boxplot scan (Step 3a) surfaced these as having
+    # extreme single-point or heavy-tail values not caught by the first pass --
+    # mostly aggregate columns (sum/max/avg) from Step 1, where a single
+    # erroneous source record can dominate the aggregate.
+    "CNT_CHILDREN",
+    "CNT_FAM_MEMBERS",
+    "OBS_30_CNT_SOCIAL_CIRCLE",
+    "OBS_60_CNT_SOCIAL_CIRCLE",
+    "BUREAU_LOAN_COUNT",
+    "BUREAU_AVG_CREDIT_SUM",
+    "BUREAU_MAX_CREDIT_SUM",
+    "BUREAU_SUM_CREDIT_SUM_DEBT",
+    "BUREAU_TOTAL_LATE_MONTHS",
+    "PREV_LOAN_COUNT",
+    "PREV_AVG_CREDIT_AMOUNT",
+    "PREV_AVG_ANNUITY",
+    "POS_MAX_DPD",
+    "CC_AVG_BALANCE",
+    "CC_MAX_BALANCE",
+    "CC_AVG_CREDIT_LIMIT",
+    "INSTALL_AVG_PAYMENT_DELAY",
 ]
 
 print("\nWinsorizing (bounds computed on TRAIN only):")

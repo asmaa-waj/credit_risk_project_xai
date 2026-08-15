@@ -233,4 +233,4 @@ with open(report_out_path, "w") as f:
 print(f"\nSaved: {report_out_path}")
 
 print("\nStep 8 complete -- preprocessing stage (Section 3.2.3) finished.")
-print("Hand-off point for Section 3.2.4 (Model Development) is data/processed/.")
+print("pip install matplotlibHand-off point for Section 3.2.4 (Model Development) is data/processed/.")
