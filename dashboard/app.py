@@ -286,4 +286,90 @@ st.write(
 )
 
 # ----------------------------------------------------------------------------
-# Applicant sele
+# Applicant selector
+# ----------------------------------------------------------------------------
+
+applicant_ids = test[id_col].tolist()
+selected_id = st.selectbox("Select Applicant ID (SK_ID_CURR):", applicant_ids)
+
+applicant_row = test[test[id_col] == selected_id]
+X_applicant = applicant_row[feature_cols]
+
+applicant_row_scaled = test_scaled[test_scaled[id_col] == selected_id]
+x_applicant_scaled = applicant_row_scaled[feature_cols].values[0]
+
+# ----------------------------------------------------------------------------
+# Predict, explain, and display
+# ----------------------------------------------------------------------------
+
+if st.button("Predict"):
+    proba = model.predict_proba(X_applicant)[0, 1]
+
+    st.subheader("Prediction")
+    st.metric(label="Predicted probability of default", value=f"{proba:.1%}")
+
+    if proba >= 0.5:
+        st.error("High risk — likely to default")
+    else:
+        st.success("Low risk — likely to repay")
+
+    shap_values = shap_explainer(X_applicant)
+
+    # --- Reason codes: now directional, framed differently by outcome ---
+    if proba >= 0.5:
+        st.subheader("Main reasons for this decision")
+        reasons = get_reason_codes(shap_values[0].values, feature_cols, direction="increase")
+        if reasons:
+            for reason in reasons:
+                st.write(f"- {reason.capitalize()}")
+        else:
+            st.write("No single feature strongly increased this applicant's risk.")
+        st.caption(
+            "Generated from the top SHAP contributors increasing predicted "
+            "default risk, in the style of ECOA adverse-action notices "
+            "(legally required for declines)."
+        )
+    else:
+        st.subheader("Main factors supporting this decision")
+        reasons = get_reason_codes(shap_values[0].values, feature_cols, direction="decrease")
+        if reasons:
+            for reason in reasons:
+                st.write(f"- {reason.capitalize()}")
+        else:
+            st.write("No single feature strongly decreased this applicant's risk.")
+        st.caption(
+            "Generated from the top SHAP contributors decreasing predicted "
+            "default risk. Real lenders are not required to justify "
+            "approvals under ECOA — this is shown here for transparency "
+            "and consistency across all applicants."
+        )
+
+    st.subheader("Detailed explanation (SHAP vs LIME)")
+    st.caption(
+        "SHAP and LIME are two different explanation methods. They don't "
+        "always agree — where they differ is itself informative, not an error."
+    )
+
+    col_shap, col_lime = st.columns(2)
+
+    with col_shap:
+        st.markdown("**SHAP** (exact, based on the model's actual structure)")
+        fig, ax = plt.subplots()
+        shap.plots.waterfall(shap_values[0], max_display=10, show=False)
+        st.pyplot(fig)
+        plt.close(fig)
+
+    with col_lime:
+        st.markdown("**LIME** (local approximation)")
+        with st.spinner("Computing LIME explanation..."):
+            explanation = lime_explainer.explain_instance(
+                x_applicant_scaled,
+                lime_predict_fn,
+                num_features=NUM_LIME_FEATURES,
+            )
+        fig = explanation.as_pyplot_figure()
+        st.pyplot(fig)
+        plt.close(fig)
+
+    with st.expander("Show raw applicant data"):
+        st.dataframe(applicant_row)
